@@ -8,7 +8,7 @@ const projectsContainer = document.getElementById('projects-container');
 // GitHub API Configuration
 // IMPORTANT: Replace 'YOUR_GITHUB_USERNAME' with an actual GitHub username
 // For demonstration, using 'facebook' to fetch public repositories
-const GITHUB_USERNAME = 'facebook'; // Change this to any GitHub username
+const GITHUB_USERNAME = 'guganr21'; // Change this to any GitHub username
 const GITHUB_API_URL = `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=6`;
 
 // Toggle mobile menu
