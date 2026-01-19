@@ -5,22 +5,42 @@
     box-sizing: border-box;
 }.project-buttons {
     display: flex;
-    gap: 10px;
+    gap: 12px;
     margin-bottom: 10px;
 }
+
+/* SAME STYLE FOR BOTH BUTTONS */
+.project-link,
 .preview-link {
-    padding: 6px 12px;
-    border: 1px solid #3498db;
-    color: #3498db;
+    display: inline-block;
+    padding: 8px 16px;
+    background: #a4dafe;
+    color: #0298f5;
     text-decoration: none;
-    border-radius: 5px;
+    border-radius: 6px;
     font-size: 14px;
-    transition: 0.3s ease;
+    font-weight: 500;
+    transition: all 0.3s ease;
 }
 
+/* SAME HOVER EFFECT */
+.project-link:hover,
 .preview-link:hover {
-    background: #3498db;
-    color: #fff;
+    background: #d7effb;
+    transform: translateY(-2px);
+}
+
+/* MOBILE FRIENDLY */
+@media (max-width: 480px) {
+    .project-buttons {
+        flex-direction: column;
+    }
+
+    .project-link,
+    .preview-link {
+        width: 100%;
+        text-align: center;
+    }
 }
 
 
