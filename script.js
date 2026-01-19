@@ -24,7 +24,6 @@ document.querySelectorAll('.nav-links a').forEach(link => {
         menuToggle.querySelector('i').classList.remove('fa-times');
     });
 });
-
 // Smooth scrolling
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
