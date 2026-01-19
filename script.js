@@ -124,7 +124,7 @@ function createProjectCard(project) {
                 ${
                     previewLink
                         ? `<a href="${previewLink}" target="_blank" class="preview-link">
-                              See Preview
+                              See Preview 
                            </a>`
                         : ''
                 }
