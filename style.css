@@ -1020,8 +1020,8 @@ body::before {
     *,
     *::before,
     *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
+        animation-duration: 0.0ms !important;
+        animation-iteration-count:0!important;
         transition-duration: 0ms !important;
     }
 }
