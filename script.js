@@ -7,7 +7,7 @@ const projectsContainer = document.getElementById('projects-container');
 
 // GitHub API Configuration
 const GITHUB_USERNAME = 'guganr21';
-const GITHUB_API_URL =`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=6`;
+const GITHUB_API_URL ='https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=6';
 // Toggle mobile menu
 menuToggle.addEventListener('click', () => {
     navLinks.classList.toggle('active');
