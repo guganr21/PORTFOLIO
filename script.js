@@ -151,9 +151,16 @@ function createProjectCard(project) {
             <p class="project-description">${description}</p>
         </div>
         <div class="project-footer">
-            <a href="${project.html_url}" target="_blank" class="project-link">View Project</a>
-            <a href="https://quizbygugan.vercel.app/" target="_blank" class="project-link">Visit Website</a>
-        
+            <a href="${project.html_url}" target="_blank" class="project-link">
+    View Project
+</a>
+
+${PROJECT_WEBSITES[project.name] ? `
+<a href="${PROJECT_WEBSITES[project.name]}" target="_blank" class="project-link">
+    Visit Website
+</a>
+` : ''}
+
             <div class="project-stats">
                 <span><i class="fas fa-star"></i> ${project.stargazers_count}</span>
                 <span><i class="fas fa-code-branch"></i> ${project.forks_count}</span>
