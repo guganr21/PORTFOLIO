@@ -8,6 +8,7 @@ const projectsContainer = document.getElementById('projects-container');
 // GitHub API Configuration
 const GITHUB_USERNAME = 'guganr21'; // Change this to any GitHub username
 const GITHUB_API_URL = `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=6`;
+
 // Toggle mobile menu
 menuToggle.addEventListener('click', () => {
     navLinks.classList.toggle('active');
@@ -69,35 +70,38 @@ function showFormMessage(text, type) {
 // Fetch GitHub Projects
 async function fetchGitHubProjects() {
     try {
-        const res = await fetch(GITHUB_API_URL, {
-            headers: {
-                // REQUIRED: GitHub requires a User-Agent header
-                'User-Agent': 'Portfolio-App' 
-            }
+        const response = await fetch(GITHUB_API_URL);
+        
+        if(!response.ok) {
+            throw new Error(`GitHub API error: ${response.status}`);
+        }
+        
+        const projects = await response.json();
+        
+        // Clear loading message
+        projectsContainer.innerHTML = '';
+        
+        // Display projects
+        projects.forEach(project => {
+            const projectCard = createProjectCard(project);
+            projectsContainer.appendChild(projectCard);
         });
         
-        if (!res.ok) {
-            // Check for specific error codes like 403 (Rate Limit)
-            if (res.status === 403) {
-                console.error('Rate limit exceeded or forbidden access');
-            }
-            throw new Error(`GitHub API failed: ${res.status}`);
-        }
-
-        const projects = await res.json();
-        projectsContainer.innerHTML = '';
-
-        // Only show repositories that aren't forks and have descriptions
-        const filteredProjects = projects.filter(repo => !repo.fork);
-
-        filteredProjects.forEach(project => {
-            projectsContainer.appendChild(createProjectCard(project));
-        });
-
+        // Add animation to project cards
         animateElements();
-    } catch (err) {
-        console.error('Fetch error:', err);
+    } catch (error) {
+        console.error('Error fetching GitHub projects:', error);
+        projectsContainer.innerHTML = `
+            <div class="error-message">
+                <p>Unable to load projects from GitHub. Please check the username or try again later.</p>
+                <p>Error: ${error.message}</p>
+                <p>Displaying sample projects instead.</p>
+            </div>
+        `;
+        
+        // Display sample projects if API fails
         displaySampleProjects();
+
         }
 }
 
