@@ -69,21 +69,36 @@ function showFormMessage(text, type) {
 // Fetch GitHub Projects
 async function fetchGitHubProjects() {
     try {
-        const res = await fetch(GITHUB_API_URL);
-        if (!res.ok) throw new Error('GitHub API failed');
+        const res = await fetch(GITHUB_API_URL, {
+            headers: {
+                // REQUIRED: GitHub requires a User-Agent header
+                'User-Agent': 'Portfolio-App' 
+            }
+        });
+        
+        if (!res.ok) {
+            // Check for specific error codes like 403 (Rate Limit)
+            if (res.status === 403) {
+                console.error('Rate limit exceeded or forbidden access');
+            }
+            throw new Error(`GitHub API failed: ${res.status}`);
+        }
 
         const projects = await res.json();
         projectsContainer.innerHTML = '';
 
-        projects.forEach(project => {
+        // Only show repositories that aren't forks and have descriptions
+        const filteredProjects = projects.filter(repo => !repo.fork);
+
+        filteredProjects.forEach(project => {
             projectsContainer.appendChild(createProjectCard(project));
         });
 
         animateElements();
     } catch (err) {
-        console.error(err);
+        console.error('Fetch error:', err);
         displaySampleProjects();
-    }
+        }
 }
 
 // Create Project Card (UPDATED)
