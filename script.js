@@ -109,45 +109,27 @@ async function fetchGitHubProjects() {
 function createProjectCard(project) {
     const card = document.createElement('div');
     card.className = 'project-card fade-in';
-
+    
+    // Format description (limit to 120 characters)
     let description = project.description || 'No description available.';
-    if (description.length > 120) description = description.slice(0, 120) + '...';
-
+    if(description.length > 120) {
+        description = description.substring(0, 120) + '...';
+    }
+    
+    // Format date
     const updatedDate = new Date(project.updated_at).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
         day: 'numeric'
     });
-
-    // 🔥 LIVE PREVIEW LINKS
-    let previewLink = '';
-
-    if (project.name.toLowerCase().includes('iq')) {
-        previewLink = 'https://iqtest-nu.vercel.app/';
-    } else if (project.name.toLowerCase().includes('quiz')) {
-        previewLink = 'https://quizbygugan.vercel.app/';
-    }
-
+    
     card.innerHTML = `
         <div class="project-header">
             <h3 class="project-name">${project.name}</h3>
             <p class="project-description">${description}</p>
         </div>
-
         <div class="project-footer">
-            <div class="project-buttons">
-                <a href="${project.html_url}" target="_blank" class="project-link">
-                    View Project
-                </a>
-                ${
-                    previewLink
-                        ? `<a href="${previewLink}" target="_blank" class="preview-link">
-                              See Preview 
-                           </a>`
-                        : ''
-                }
-            </div>
-
+            <a href="${project.html_url}" target="_blank" class="project-link">View Project</a>
             <div class="project-stats">
                 <span><i class="fas fa-star"></i> ${project.stargazers_count}</span>
                 <span><i class="fas fa-code-branch"></i> ${project.forks_count}</span>
@@ -155,7 +137,7 @@ function createProjectCard(project) {
             </div>
         </div>
     `;
-
+    
     return card;
 }
 
