@@ -121,6 +121,11 @@ async function fetchGitHubProjects() {
         displaySampleProjects();
     }
 }
+const PROJECT_WEBSITES = {
+    "IQ-TEST": "https://iqtest-nu.vercel.app/",
+    //add exact repo name
+    
+};
 
 // Function to create a project card
 function createProjectCard(project) {
