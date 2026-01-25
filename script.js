@@ -123,6 +123,7 @@ async function fetchGitHubProjects() {
 }
 const PROJECT_WEBSITES = {
     "IQ-TEST": "https://iqtest-nu.vercel.app/",
+    "Quiz-Website":"https://quizbygugan.vercel.app/",
     //add exact repo name
     
 };
