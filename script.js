@@ -65,10 +65,23 @@ contactForm.addEventListener('submit', function(e) {
         showFormMessage('Please enter a valid email address.', 'error');
         return;
     }
-    
-    // In a real application, you would send this data to a server
-    // For this example, we'll just show a success message
-    showFormMessage('Thank you for your message! I\'ll get back to you soon.', 'success');
+    //thankyoy message
+    fetch("http://localhost:3000/send-message", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({ name, email, message })
+})
+.then(res => res.text())
+.then(data => {
+  showFormMessage("Message sent successfully ✅", "success");
+  contactForm.reset();
+})
+.catch(() => {
+  showFormMessage("Server error ❌", "error");
+});
+
     
     // Reset form
     contactForm.reset();
