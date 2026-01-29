@@ -45,19 +45,33 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // Contact form submission
-contactForm.addEventListener('submit', function(e) {
+contactForm.addEventListener('submit', async function(e) {
     e.preventDefault();
     
-    // Get form values
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    const message = document.getElementById('message').value;
-    
-    // Simple validation
-    if(!name || !email || !message) {
-        showFormMessage('Please fill in all fields.', 'error');
-        return;
+    const formData = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        message: document.getElementById('message').value
+    };
+
+    try {
+        const response = await fetch('http://localhost:5000/api/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+
+        if (response.ok) {
+            showFormMessage('Thank you! Your message was saved to the database.', 'success');
+            contactForm.reset();
+        } else {
+            showFormMessage('Something went wrong. Please try again.', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showFormMessage('Server is offline.', 'error');
     }
+});
     
     // Email validation regex
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
