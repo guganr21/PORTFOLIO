@@ -66,8 +66,7 @@ contactForm.addEventListener('submit', function(e) {
         return;
     }
     //thankyoy message
-    fetch("https://your-backend.onrender.com/send-message")
-, {
+    fetch("https://your-backend.onrender.com/send-message", {
   method: "POST",
   headers: {
     "Content-Type": "application/json"
