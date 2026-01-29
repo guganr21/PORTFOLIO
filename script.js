@@ -68,7 +68,34 @@ contactForm.addEventListener('submit', function(e) {
     
     // In a real application, you would send this data to a server
     // For this example, we'll just show a success message
-    showFormMessage('Thank you for your message! I\'ll get back to you soon.', 'success');
+contactForm.addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const message = document.getElementById("message").value;
+
+  try {
+    const res = await fetch("http://localhost:5000/send-message", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ name, email, message })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      showFormMessage("Message sent successfully ✅", "success");
+      contactForm.reset();
+    } else {
+      showFormMessage("Something went wrong ❌", "error");
+    }
+  } catch (error) {
+    showFormMessage("Server error ❌", "error");
+  }
+});
     
     // Reset form
     contactForm.reset();
