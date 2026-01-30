@@ -92,7 +92,7 @@ fetch("http://localhost:5000/send-message", {
     console.error(err);
     showFormMessage("Server error ❌", "error");
 });
-    
+
     // Reset form
     contactForm.reset();
 });
