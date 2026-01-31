@@ -68,7 +68,7 @@ contactForm.addEventListener('submit', function(e) {
     
     // In a real application, you would send this data to a server
     // For this example, we'll just show a success message
-fetch("http://localhost:5000/send-message", {
+fetch("https://portfolio-xx2j.onrender.com/send-message", {
     method: "POST",
     headers: {
         "Content-Type": "application/json"
