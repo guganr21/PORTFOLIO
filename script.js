@@ -50,13 +50,40 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // Contact form submission
-contactForm.addEventListener('submit', function(e) {
+// Contact form submission
+contactForm.addEventListener('submit', async function(e) {
     e.preventDefault();
-    
-    // Get form values
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    const message = document.getElementById('message').value;
+
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const message = document.getElementById('message').value.trim();
+
+    if (!name || !email || !message) {
+        showFormMessage('Please fill in all fields.', 'error');
+        return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showFormMessage('Please enter a valid email address.', 'error');
+        return;
+    }
+
+    // 🔥 Insert into Supabase
+    const { data, error } = await supabase
+        .from('messages')
+        .insert([
+            { name: name, email: email, message: message }
+        ]);
+
+    if (error) {
+        console.error(error);
+        showFormMessage('Something went wrong. Please try again.', 'error');
+    } else {
+        showFormMessage('Message sent successfully! 🚀', 'success');
+        contactForm.reset();
+    }
+});
     
     // Simple validation
     if(!name || !email || !message) {
