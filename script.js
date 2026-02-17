@@ -44,14 +44,20 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
+// --- Supabase Configuration ---
+const SUPABASE_URL = 'https://your-project-url.supabase.co';
+const SUPABASE_ANON_KEY = 'your-anon-key-here';
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 // Contact form submission
-contactForm.addEventListener('submit', function(e) {
+contactForm.addEventListener('submit', async function(e) {
     e.preventDefault();
     
     // Get form values
     const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
     const message = document.getElementById('message').value;
+    const submitBtn = contactForm.querySelector('.submit-btn');
     
     // Simple validation
     if(!name || !email || !message) {
@@ -59,6 +65,38 @@ contactForm.addEventListener('submit', function(e) {
         return;
     }
     
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(!emailRegex.test(email)) {
+        showFormMessage('Please enter a valid email address.', 'error');
+        return;
+    }
+
+    try {
+        // Visual feedback
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
+
+        // --- INSERT INTO SUPABASE ---
+        const { data, error } = await supabase
+            .from('messages')
+            .insert([
+                { name: name, email: email, message: message }
+            ]);
+
+        if (error) throw error;
+
+        showFormMessage('Message sent successfully! I\'ll get back to you soon.', 'success');
+        contactForm.reset();
+
+    } catch (error) {
+        console.error('Supabase Error:', error.message);
+        showFormMessage('Oops! Something went wrong. Please try again.', 'error');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Message';
+    }
+});    
     // Email validation regex
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if(!emailRegex.test(email)) {
