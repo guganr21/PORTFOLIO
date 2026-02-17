@@ -45,8 +45,8 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // --- Supabase Configuration ---
-const SUPABASE_URL = 'https://your-project-url.supabase.co';
-const SUPABASE_ANON_KEY = 'your-anon-key-here';
+const SUPABASE_URL = 'https://fvndxlnpnoejwrvhyntg.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2bmR4bG5wbm9landydmh5bnRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMzEyMzksImV4cCI6MjA4NjkwNzIzOX0.7qqSH9gx_R5I-1rIDnIW9RnmXetY4eMdQV4g6waPc-4';
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Contact form submission
