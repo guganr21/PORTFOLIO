@@ -44,46 +44,60 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Contact form submission
-contactForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // Get form values
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    const message = document.getElementById('message').value;
-    
-    // Simple validation
-    if(!name || !email || !message) {
-        showFormMessage('Please fill in all fields.', 'error');
-        return;
-    }
-    
-    // Email validation regex
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if(!emailRegex.test(email)) {
-        showFormMessage('Please enter a valid email address.', 'error');
-        return;
-    }
-    
-    // In a real application, you would send this data to a server
-    // For this example, we'll just show a success message
-    showFormMessage('Thank you for your message! I\'ll get back to you soon.', 'success');
-    
-    // Reset form
-    contactForm.reset();
-});
+<!-- FEEDBACK -->
+<section id="feedback">
+<div class="container card">
+<h2 class="section-title">Feedback</h2>
 
-// Function to show form message
-function showFormMessage(text, type) {
-    formMessage.textContent = text;
-    formMessage.style.color = type === 'success' ? '#27ae60' : '#e74c3c';
-    
-    // Clear message after 5 seconds
-    setTimeout(() => {
-        formMessage.textContent = '';
-    }, 5000);
-}
+<form class="feedback-form" id="feedbackForm">
+<input type="text" id="name" placeholder="Your Name" required>
+<input type="email" id="email" placeholder="Your Email" required>
+<textarea rows="4" id="message" placeholder="Your Feedback" required></textarea>
+<button type="submit">Submit Feedback</button>
+</form>
+
+<div class="feedback-status" id="status"></div>
+</div>
+</section>
+
+<footer style="text-align:center;padding:20px;color:var(--muted)">
+© 2026 Ankit Biyani
+</footer>
+
+<script>
+/* 🔗 SUPABASE CONFIG */
+const supabaseUrl = "https://wbnjqitvuhzqycboxnmn.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndibmpxaXR2dWh6cXljYm94bm1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzOTI3OTYsImV4cCI6MjA4Njk2ODc5Nn0.cz1loMqT5Ktin1OifhQ5jWUghoRTGYYW1aKi9TbEAgc";
+
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+/* 📨 FEEDBACK SUBMIT */
+document.getElementById("feedbackForm").addEventListener("submit", async (e) => {
+e.preventDefault();
+
+const status = document.getElementById("status");
+status.innerText = "Submitting...";
+
+const name = document.getElementById("name").value;
+const email = document.getElementById("email").value;
+const message = document.getElementById("message").value;
+
+const { error } = await supabaseClient
+.from("feedbacks")
+.insert([{ name, email, message }]);
+
+if (error) {
+status.innerText = "❌ Error submitting feedback";
+status.style.color = "red";
+} else {
+status.innerText = "✅ Feedback submitted successfully!";
+status.style.color = "#00d4ff";
+e.target.reset();
+}});
+</script>
+
+</body>
+</html>
 
 // Function to fetch GitHub projects
 async function fetchGitHubProjects() {
