@@ -44,6 +44,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
+
 <!-- FEEDBACK -->
 <section id="feedback">
 <div class="container card">
