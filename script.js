@@ -61,7 +61,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 </section>
 
 <footer style="text-align:center;padding:20px;color:var(--muted)">
-© 2026 Ankit Biyani
+© 2026 Gugan R
 </footer>
 
 <script>
