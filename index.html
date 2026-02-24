@@ -1050,34 +1050,68 @@
             });
         });
 
-        // Contact form submission
-        contactForm.addEventListener('submit', function(e) {
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://ysdxiyihueqnbslnmxsb.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzZHhpeWlodWVxbmJzbG5teHNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5MzgyODksImV4cCI6MjA4NzUxNDI4OX0.el721N68qskwq2QMWZbY-tA61PlcbkwV9yVTJLLILgA';
+
+        // Contact form submission with Supabase
+        contactForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+
             // Get form values
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const message = document.getElementById('message').value;
-            
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const message = document.getElementById('message').value.trim();
+
             // Simple validation
-            if(!name || !email || !message) {
+            if (!name || !email || !message) {
                 showFormMessage('Please fill in all fields.', 'error');
                 return;
             }
-            
+
             // Email validation regex
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if(!emailRegex.test(email)) {
+            if (!emailRegex.test(email)) {
                 showFormMessage('Please enter a valid email address.', 'error');
                 return;
             }
-            
-            // In a real application, you would send this data to a server
-            // For this example, we'll just show a success message
-            showFormMessage('Thank you for your message! I\'ll get back to you soon.', 'success');
-            
-            // Reset form
-            contactForm.reset();
+
+            // Show loading state
+            const submitBtn = contactForm.querySelector('.submit-btn');
+            const originalBtnText = submitBtn.textContent;
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/contact`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        Email: email,
+                        message: message
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || `Error ${response.status}`);
+                }
+
+                showFormMessage('✅ Thank you! Your message has been sent successfully.', 'success');
+                contactForm.reset();
+            } catch (error) {
+                console.error('Supabase error:', error);
+                showFormMessage('❌ Failed to send message. Please try again later.', 'error');
+            } finally {
+                submitBtn.textContent = originalBtnText;
+                submitBtn.disabled = false;
+            }
         });
 
         // Function to show form message
