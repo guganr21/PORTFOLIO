@@ -10,8 +10,6 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap"
         rel="stylesheet">
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Embedded CSS (from style.css) -->
     <style>
         /* CSS Reset and Base Styles */
@@ -1109,57 +1107,116 @@
             });
         });
 
-      <!-- FEEDBACK -->
-<section id="feedback">
-<div class="container card">
-<h2 class="section-title">Feedback</h2>
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://ysdxiyihueqnbslnmxsb.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzZHhpeWlodWVxbmJzbG5teHNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5MzgyODksImV4cCI6MjA4NzUxNDI4OX0.el721N68qskwq2QMWZbY-tA61PlcbkwV9yVTJLLILgA';
 
-<form class="feedback-form" id="feedbackForm">
-<input type="text" id="name" placeholder="Your Name" required>
-<input type="email" id="email" placeholder="Your Email" required>
-<textarea rows="4" id="message" placeholder="Your Feedback" required></textarea>
-<button type="submit">Submit Feedback</button>
-</form>
+        // Contact form submission with Supabase
+        contactForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
 
-<div class="feedback-status" id="status"></div>
-</div>
-</section>
+            // Get form values
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const message = document.getElementById('message').value.trim();
 
-<footer style="text-align:center;padding:20px;color:var(--muted)">
-© 2026 Ankit Biyani
-</footer>
+            // Simple validation
+            if (!name || !email || !message) {
+                showFormMessage('Please fill in all fields.', 'error');
+                return;
+            }
 
-<script>
-/* 🔗 SUPABASE CONFIG */
-const supabaseUrl = "https://ysdxiyihueqnbslnmxsb.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzZHhpeWlodWVxbmJzbG5teHNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5MzgyODksImV4cCI6MjA4NzUxNDI4OX0.el721N68qskwq2QMWZbY-tA61PlcbkwV9yVTJLLILgA";
+            // Email validation regex
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showFormMessage('Please enter a valid email address.', 'error');
+                return;
+            }
 
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+            // Show loading state
+            const submitBtn = contactForm.querySelector('.submit-btn');
+            const originalBtnText = submitBtn.textContent;
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
 
-/* 📨 FEEDBACK SUBMIT */
-document.getElementById("feedbackForm").addEventListener("submit", async (e) => {
-e.preventDefault();
+            try {
+                // Use the table found by the diagnostic or default to 'contact'
+                const tableName = window.SUPABASE_ACTIVE_TABLE || 'contact';
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/${tableName}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        Email: email,
+                        message: message
+                    })
+                });
 
-const status = document.getElementById("status");
-status.innerText = "Submitting...";
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Supabase Error Response:', errorText);
 
-const name = document.getElementById("name").value;
-const email = document.getElementById("email").value;
-const message = document.getElementById("message").value;
+                    // If table not found, it might be named 'contacts' (plural)
+                    if (response.status === 404) {
+                        throw new Error('Table "contact" not found. Please check your Supabase table name.');
+                    }
 
-const { error } = await supabaseClient
-.from("feedbacks")
-.insert([{ name, email, message }]);
+                    throw new Error(`Server responded with ${response.status}: ${errorText}`);
+                }
 
-if (error) {
-status.innerText = "❌ Error submitting feedback";
-status.style.color = "red";
-} else {
-status.innerText = "✅ Feedback submitted successfully!";
-status.style.color = "#00d4ff";
-e.target.reset();
-}});
+                showFormMessage('✅ Thank you! Your message has been sent successfully.', 'success');
+                contactForm.reset();
+                console.log('Message sent successfully to Supabase!');
+            } catch (error) {
+                console.error('Submission Error:', error);
 
+                let userFriendlyMsg = '❌ Failed to send message.';
+                if (error.message.includes('404')) {
+                    userFriendlyMsg += ' Table not found. Please verify the table name in Supabase.';
+                } else if (error.message.includes('403')) {
+                    userFriendlyMsg += ' Permission denied. Please enable RLS insert policy.';
+                } else if (error.message.includes('Failed to fetch')) {
+                    userFriendlyMsg += ' Network error or CORS issue. Are you running this locally?';
+                } else {
+                    userFriendlyMsg += ' ' + error.message;
+                }
+
+                showFormMessage(userFriendlyMsg, 'error');
+            } finally {
+                submitBtn.textContent = originalBtnText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Function to show form message
+        function showFormMessage(text, type) {
+            formMessage.textContent = text;
+            formMessage.style.color = type === 'success' ? '#27ae60' : '#e74c3c';
+
+            // Clear message after 5 seconds
+            setTimeout(() => {
+                formMessage.textContent = '';
+            }, 5000);
+        }
+
+        // Function to fetch GitHub projects
+        async function fetchGitHubProjects() {
+            try {
+                const response = await fetch(GITHUB_API_URL);
+
+                if (!response.ok) {
+                    throw new Error(`GitHub API error: ${response.status}`);
+                }
+
+                const projects = await response.json();
+
+                // Clear loading message
+                projectsContainer.innerHTML = '';
 
                 // Display projects
                 projects.forEach(project => {
@@ -1326,7 +1383,7 @@ e.target.reset();
 
 
         // Initialize the page
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             // Fetch GitHub projects
             fetchGitHubProjects();
 
@@ -1340,7 +1397,63 @@ e.target.reset();
             setTimeout(() => {
                 animateElements();
             }, 500);
+
+            // Supabase Diagnostic (Run in background)
+            checkSupabaseConnection();
         });
+
+        // Diagnostic Function
+        async function checkSupabaseConnection() {
+            console.log('--- Supabase Diagnostic Start ---');
+
+            // Basic Config Check
+            if (!SUPABASE_URL.startsWith('https://') || !SUPABASE_URL.includes('.supabase.co')) {
+                console.error('CRITICAL: SUPABASE_URL seems invalid.');
+                return;
+            }
+            if (!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.length < 50) {
+                console.error('CRITICAL: SUPABASE_ANON_KEY seems invalid.');
+                return;
+            }
+
+            const tablesToTry = ['contact', 'contacts', 'messages', 'feedback', 'submissions'];
+            let foundTable = null;
+
+            for (const table of tablesToTry) {
+                try {
+                    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*&limit=1`, {
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        }
+                    });
+                    if (res.ok) {
+                        console.log(`✅ Table "${table}" is accessible!`);
+                        foundTable = table;
+                        break;
+                    } else {
+                        console.warn(`❌ Table "${table}" check failed: ${res.status}`);
+                    }
+                } catch (e) {
+                    console.error(`Error checking table ${table}:`, e);
+                }
+            }
+
+            if (!foundTable) {
+                console.error('CRITICAL: No known contact tables were found or accessible. Please check your Supabase table name and RLS policies.');
+                // Show a small subtle debug info if it fails
+                const footer = document.querySelector('.footer .container');
+                const debugDiv = document.createElement('div');
+                debugDiv.style.cssText = 'font-size: 10px; color: #444; margin-top: 10px; cursor: pointer;';
+                debugDiv.textContent = 'Supabase Connection Status: Click to show details';
+                debugDiv.onclick = () => alert(`Connection Status:\nURL: ${SUPABASE_URL}\nNo accessible tables found among: ${tablesToTry.join(', ')}\nCheck browser console (F12) for detailed logs.`);
+                footer.appendChild(debugDiv);
+            } else {
+                console.log(`Success: Using table "${foundTable}"`);
+                // Update the form submission to use the found table if it's different
+                window.SUPABASE_ACTIVE_TABLE = foundTable;
+            }
+        }
     </script>
 </body>
 
