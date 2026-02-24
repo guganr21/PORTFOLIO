@@ -1140,9 +1140,7 @@
             submitBtn.disabled = true;
 
             try {
-                // Use the table found by the diagnostic or default to 'contact'
-                const tableName = window.SUPABASE_ACTIVE_TABLE || 'contact';
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/${tableName}`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/contact`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1397,9 +1395,6 @@
             setTimeout(() => {
                 animateElements();
             }, 500);
-
-            // Supabase Diagnostic (Run in background)
-            checkSupabaseConnection();
         });
 
         // Diagnostic Function
@@ -1416,44 +1411,9 @@
                 return;
             }
 
-            const tablesToTry = ['contact', 'contacts', 'messages', 'feedback', 'submissions'];
-            let foundTable = null;
 
-            for (const table of tablesToTry) {
-                try {
-                    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*&limit=1`, {
-                        headers: {
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                        }
-                    });
-                    if (res.ok) {
-                        console.log(`✅ Table "${table}" is accessible!`);
-                        foundTable = table;
-                        break;
-                    } else {
-                        console.warn(`❌ Table "${table}" check failed: ${res.status}`);
-                    }
-                } catch (e) {
-                    console.error(`Error checking table ${table}:`, e);
-                }
-            }
 
-            if (!foundTable) {
-                console.error('CRITICAL: No known contact tables were found or accessible. Please check your Supabase table name and RLS policies.');
-                // Show a small subtle debug info if it fails
-                const footer = document.querySelector('.footer .container');
-                const debugDiv = document.createElement('div');
-                debugDiv.style.cssText = 'font-size: 10px; color: #444; margin-top: 10px; cursor: pointer;';
-                debugDiv.textContent = 'Supabase Connection Status: Click to show details';
-                debugDiv.onclick = () => alert(`Connection Status:\nURL: ${SUPABASE_URL}\nNo accessible tables found among: ${tablesToTry.join(', ')}\nCheck browser console (F12) for detailed logs.`);
-                footer.appendChild(debugDiv);
-            } else {
-                console.log(`Success: Using table "${foundTable}"`);
-                // Update the form submission to use the found table if it's different
-                window.SUPABASE_ACTIVE_TABLE = foundTable;
-            }
-        }
+
     </script>
 </body>
 
