@@ -1397,22 +1397,6 @@
             }, 500);
         });
 
-        // Diagnostic Function
-        async function checkSupabaseConnection() {
-            console.log('--- Supabase Diagnostic Start ---');
-
-            // Basic Config Check
-            if (!SUPABASE_URL.startsWith('https://') || !SUPABASE_URL.includes('.supabase.co')) {
-                console.error('CRITICAL: SUPABASE_URL seems invalid.');
-                return;
-            }
-            if (!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.length < 50) {
-                console.error('CRITICAL: SUPABASE_ANON_KEY seems invalid.');
-                return;
-            }
-
-
-
 
     </script>
 </body>
