@@ -938,8 +938,9 @@ const { error } = await supabaseClient
 .insert([{ name, email, message }]);
 
 if (error) {
-status.innerText = "❌ Error submitting feedback";
-status.style.color = "red";
+  console.log(error);
+  status.innerText = "❌ " + error.message;
+  status.style.color = "red";
 } else {
 status.innerText = "✅ Feedback submitted successfully!";
 status.style.color = "#00d4ff";
